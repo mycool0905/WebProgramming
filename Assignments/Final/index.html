@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>
+        몸짱녀 이상형 월드컵
+    </title>
+    <style>
+        body {
+            text-align:center;
+            background-color:aliceblue;
+        }
+
+        h1 {
+            text-align: center;
+            color: white;
+            text-shadow: -2px 0 hotpink, 2px 0 hotpink, 0 -2px hotpink, 0 2px hotpink;
+        }
+
+        span{
+            font:bold 20px 맑은고딕;
+        }
+
+        img{
+            border:5px solid white;
+        }
+    </style>
+    <script>
+        /* 이름 입력 후 출력 함수 */
+        var userName;
+        var gameCount=0;
+        var tournament = new Array(8);
+        var filePath = "image/"
+        var fileFormat = ".jpg";
+        var startPoint// 시작 숫자
+        var restCount// 살아 남은 사람들
+
+        /* Storage에서 게임 정보 불러오는 함수 */
+        function StorageGetting() {
+            var myCount = localStorage.getItem(userName);
+            if (myCount == null)
+                myCount = 0;
+            return parseInt(myCount)+1;
+        }
+
+        /* Storage에 게임 정보 저장 함수 */
+        function StorageSetting() {
+            localStorage.setItem(userName, gameCount);
+        }
+
+        /* 인사말 적는 함수 */
+        function Welcome() {
+            userName = prompt("이름을 입력해주세요", "김완기");
+
+            var execution = document.getElementById("name");
+            execution.innerHTML = "<span style='color:mediumslateblue; font:bold 30px 고딕'>" + userName + "</span>님 반갑습니다!";
+        }
+
+        /* N번 띄어쓰기 함수 */
+        function nbsp(N) {
+            for (var i = 0; i < N; i++)
+                document.write("&nbsp;");
+        }
+
+        /* N번 들여쓰기 함수 */
+        function br(N) {
+            for (var i = 0; i < N; i++)
+                document.write("<br>");
+        }
+
+        /* 사진 번호 초기화 함수 */
+        function initialize() {
+            startPoint = 0;
+            restCount = 8;
+            var temp = new Array(22);
+            var count = 7;
+            var maxValue;
+            var maxIndex;
+
+            for (var i = 0; i < temp.length; i++)
+                temp[i] = i;
+
+            while (count >= 0) {
+                maxValue = -1;
+                for (var i = 0; i < temp.length; i++) {
+                    if (temp[i] != -1)
+                        temp[i] = Math.random();
+                    if (temp[i] > maxValue) {
+                        maxValue = temp[i];
+                        maxIndex = i;
+                    }
+                }
+                temp[maxIndex] = -1;
+                tournament[count] = maxIndex;
+                count--;
+            }
+        }
+
+        /* 입력 받은 번호 이름으로 바꿔주는 함수 */
+        function NumberToName(N) {
+            var retName;
+            switch (N) {
+                case 0: retName = '한예슬'; break;
+                case 1: retName = 'BJ코코'; break;
+                case 2: retName = '강소라'; break;
+                case 3: retName = '김사랑'; break;
+                case 4: retName = '김효정'; break;
+                case 5: retName = '문가비'; break;
+                case 6: retName = '시노자키 아이'; break;
+                case 7: retName = '심으뜸'; break;
+                case 8: retName = '양정원'; break;
+                case 9: retName = '예정화'; break;
+                case 10: retName = '유승옥'; break;
+                case 11: retName = '이하늬'; break;
+                case 12: retName = '이효리'; break;
+                case 13: retName = '클라라'; break;
+                case 14: retName = '오또맘'; break;
+                case 15: retName = '설현'; break;
+                case 16: retName = '전효성'; break;
+                case 17: retName = '손나은'; break;
+                case 18: retName = '모모'; break;
+                case 19: retName = '지효'; break;
+                case 20: retName = '조이'; break;
+                case 21: retName = '성소'; break;
+
+            }
+            return retName;
+        }
+
+        /* 시작/재시작 키 누르면 호출되는 함수 */
+        function Start() {
+            var btn = document.getElementById("btn");
+            var print = document.getElementById("result");
+            var execution = document.getElementById("playing");
+
+            gameCount = StorageGetting();
+            execution.innerHTML = "현재 " + gameCount + "번째 게임 진행 중입니다.";
+            btn.disabled = false;
+            print.innerHTML = '원하는 대상을 체크하고 선택 완료 버튼을 눌러 주십시오.';
+
+            initialize();
+            ShowImage();
+        }
+
+        /* 아직 붙지 않았거나 승리한 숫자들 고르는 함수 */
+        function ChooseImage() {
+            for (var i = startPoint; i < tournament.length; i++)
+                if (tournament[i] >= 0) {
+                    startPoint = i + 1;
+                    return tournament[i];
+                }
+            return -1;
+        }
+
+        /* 8강 준결승 결승을 알려주는 함수 */
+        function AlertCurrent() {
+            var alertText;
+
+            if (restCount == 8 || restCount == 4 || restCount == 2) {
+                if (restCount == 8)
+                    alertText = "8강전을 시작합니다.";
+                else if (restCount == 4)
+                    alertText = "준결승을 시작합니다.";
+                else if (restCount == 2)
+                    alertText = "결승을 시작합니다.";
+
+                alert(alertText);
+            }
+        }
+
+        /* image 보여주고 체크 지정해주는 함수 */
+        function ShowImage() {
+            var image1 = document.getElementById("image1");
+            var image2 = document.getElementById("image2");
+            var text1 = document.getElementById("text1");
+            var text2 = document.getElementById("text2");
+            var first = ChooseImage();
+            var second = ChooseImage();
+            var checkList = document.getElementsByName("fight");
+
+            AlertCurrent(); // 이미지 보여주기 전에 몇 강인지 알려주기
+
+            image1.src = filePath + first + fileFormat;
+            image2.src = filePath + second + fileFormat;
+            text1.innerHTML = NumberToName(first);
+            text2.innerHTML = NumberToName(second);
+            checkList[0].value = first;
+            checkList[1].value = second;
+        }
+
+        /* 체크 해놓은 대상 이기게 하기 */
+        function CheckWinner() {
+            var checked = null;
+            var unchecked = null;
+            var checkList = document.getElementsByName("fight");
+            for (var i = 0; i < checkList.length; i++) {
+                if (checkList[i].checked == true) {
+                    checked = checkList[i];
+                    checkList[i].checked = false;
+                    unchecked = checkList[1 - i];
+                }
+            }
+
+            if (checked != null) {
+                for (var i = 0; i < tournament.length; i++)
+                    if (tournament[i] == unchecked.value)
+                        tournament[i] = -1;
+                restCount--;
+
+                if (restCount == 1)
+                    ThisIsWinner(checked.value);
+                else {
+                    if (restCount == 2 || restCount == 4)
+                        startPoint = 0;
+                    ShowImage();
+                }
+            }
+            else
+                alert("아무것도 선택하지 않으셨습니다. 선택해주십시오.")
+        }
+
+        /* 우승자 알려주는 함수 */
+        function ThisIsWinner(N) {
+            var print = document.getElementById("result");
+            var image1 = document.getElementById("image1");
+            var image2 = document.getElementById("image2");
+            var text1 = document.getElementById("text1");
+            var text2 = document.getElementById("text2");
+            var btn = document.getElementById("btn");
+            var name = NumberToName(parseInt(N));
+
+            StorageSetting();
+            print.innerHTML = userName + "님의 " + gameCount +"번째 게임의 우승자 <span style='color:red'>: " + name + "</span>";
+            text1.innerHTML = name;
+            text2.innerHTML = name;
+            image1.src = filePath + N + fileFormat;
+            image2.src = filePath + N + fileFormat;
+
+            btn.disabled = 'disabled';
+        }
+
+    </script>
+</head>
+<body>
+    <h1> 몸짱녀 이상형 월드컵 </h1>
+    <!--이름 입력-->
+    <p id="name" style="font-size:20px; text-align:center"></p>
+    <!--이름 출력-->
+    <script>
+        Welcome();
+    </script>
+    <p id="playing"></p>
+    <hr />
+    <div>
+        <form id="form">
+            <input type="button" value="시작/재시작" onclick="Start()" />
+            <script>
+                br(1);
+            </script>
+            <p id="result"></p>
+
+            <script>
+                br(1);
+            </script>
+            <img id="image1" src="image/empty.png" width="400" height="500" />
+            <script>
+                nbsp(10);
+            </script>
+            <img id="image2" src="image/empty.png" width="400" height="500" />
+            <br />
+            <input type="radio" name="fight" value="check1" />
+            <span id="text1"></span>
+            <script>
+                nbsp(72);
+            </script>
+            <input type="radio" name="fight" value="check2" />
+            <span id="text2"></span>
+            <script>
+                br(3);
+            </script>
+            <input type="button" id="btn" value="선택 완료" disabled="disabled" onclick="CheckWinner()" />
+        </form>
+    </div>
+
+</body>
+</html>
