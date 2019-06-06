@@ -9,14 +9,14 @@ Schema.createSchema = function(mongoose){
     // unique : 고유한 값 (Primary key, Unique key)
     // password를 hashed_password로 변경, default 속성 모두 추가, salt 속성 추가
     var UserSchema = mongoose.Schema({
-        id: {type: String, required: true, unique: true, 'default' : ' '}, 
-        hashed_password: {type: String, required: true, 'default' : ' '},
-        salt : {type: String, required: true},
-        // name은 hashed 인덱싱 해놓는다.
-        name: {type: String, index: 'hashed', 'default' : ' '},
-        // 입력을 안하면 default 값으로 -1을 넣어둔다.
+        id: {type: String, index: 'hashed', required: true, unique: true, 'default' : ''}, 
+        hashed_password: {type: String, required: true, 'default' : ''},
+        salt: {type: String, required: true},
+        name: {type: String, index: 'hashed', 'default' : ''},
         age: {type: Number, 'default' : -1},
-        // Date type으로 생성 시각과 수정 시각을 정하고 default 값으로 현재 시각을 넣어둔다.
+        phone: {type: String, 'default' : ''},
+        photo: {type: String, 'default' : ''},
+        count_of_auction: {type: Number, 'default' : 0},
         created_at: {type: Date, index : {unique : false}, 'default' : Date.now},
         updated_at: {type: Date, index : {unique : false}, 'default' : Date.now}
     });
