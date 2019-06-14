@@ -21,6 +21,10 @@ var app = express();
 /* Express 객체 기본 속성 설정 */
 app.set('port',process.env.PORT || 2402);
 
+/* 뷰 엔진 설정 */
+app.set('views', __dirname + '/views');
+app.set('view engine', 'ejs');
+
 /* body-parser를 사용해 application/x-www-form-urlencoded 파싱 */
 app.use(bodyParser.urlencoded({extended:false}));
 
@@ -79,8 +83,6 @@ function connectDB(){
             return this.find({}, callback);
         });
         
-        console.log('UserSchema 정의함.');
-        
         // UserModel 모델 정의
         UserModel = mongoose.model('users', UserSchema);
         console.log('UserModel 정의함.');
@@ -98,10 +100,6 @@ function createUserSchema(){
     
     // user_schema.js 모듈 불러오기
     UserSchema = require('./database/user_schema').createSchema(mongoose);
-    
-    // UserModel 모델 정의
-    UserModel = mongoose.model('user3', UserSchema);
-    console.log('UserModel 정의함.');
 }
 
 /* 사용자를 인증하는 함수 */
@@ -126,9 +124,7 @@ var authUser = function(database, id, password, callback){
             console.log('아이디와 일치하는 사용자 찾음.');
             
             // 2. 비밀번호 확인
-            console.log('!');
             var user = new UserModel({id : id});
-            console.log('!');
             var authenticated = user.authenticate(password, results[0]._doc.salt, results[0]._doc.hashed_password);
             if(authenticated){
                 console.log('비밀번호 일치함');

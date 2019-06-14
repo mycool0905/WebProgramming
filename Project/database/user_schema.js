@@ -14,9 +14,6 @@ Schema.createSchema = function(mongoose){
         salt: {type: String, required: true},
         name: {type: String, index: 'hashed', 'default' : ''},
         age: {type: Number, 'default' : -1},
-        phone: {type: String, 'default' : ''},
-        photo: {type: String, 'default' : ''},
-        count_of_auction: {type: Number, 'default' : 0},
         created_at: {type: Date, index : {unique : false}, 'default' : Date.now},
         updated_at: {type: Date, index : {unique : false}, 'default' : Date.now}
     });

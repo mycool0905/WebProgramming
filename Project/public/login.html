@@ -1,20 +1,137 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <title>�Ϸ����</title>
-</head>
-<body>
-    <h1 style="text-align:center">
-        <img src="logo.PNG" alt="�Ϸ����" width="500px" />
-    </h1>
-    <hr style="border:4px solid rgb(40,240,50)" />
-    <div style="width:100%;height:500px;text-align:center;">
-        <div style="display:inline-block;width:400px;height:450px;border-radius:30px;border:4px solid;margin-top:1%;margin-bottom:1%;">
-            <form method="post" action="/process/login">
+    <head>
+        <meta charset="UTF-8">
+        <meta name ="viewport" content="width = device-width, height = device-height, initial-scale = 1">
+        <title>
+            로그인
+        </title>
+        
+        <link href = "./semantic.min.css" rel = "stylesheet">
+        
+        <script src="./jquery-2.1.4.min.js"></script>
+        <script src="./semantic.min.js"></script>
+        
+        <style>
+            *{
+                padding: 0;
+                margin: 0;
+                box-sizing: border-box;
+            }
+            
+            html{
+                width: 100%;
+                height: 100%;
+            }
+            
+            body{
+                width: 100%;
+                height: 100%;
+                color: #000;
+                background-color: #fff;
+            }
+            
+            .container{
+                width: 100%;
+                height: 100%;
+                display: flex;
+                flex-flow: column wrap;
+                align-items: center;
+                justify-content: center;
+            }
+            
+            #cardbox{
+                width: 400px;
+            }
+            
+            #iconImage{
+                display: inline;
+            }
+            
+            #titleText{
+                font-size: 1.4em;
+                font-weight: bold;
+                color: #777;
+            }
+            
+            #contentsText{
+                color: #999;
+            }
+            
+            #form1{
+                padding: 1em;
+            }
+            
+            .row{
+                height: 3em;
+            }
+            
+            .col1{
+                width: 5em;
+            }
+            
+            .inputbox{
+                width: 20em;
+            }
+            
+            #buttonContainer{
+                padding-top: 0.6em;
+                text-align: right;
+            }
+        </style>
+        
+    </head>
 
-            </form>
+    <body>
+        <div class = "container">
+            <img src="./images/logo.PNG" width="400px">
+            <div id = "cardbox" class = "ui blue fluid card">
+                <div class= "content">
+                    <div class = "left floated author">
+                        <img id = "iconImage" class = "ui avatar image" src ="./images/author.png">
+                    </div>
+                    <div>
+                        <div id = "titleText" class = "header">로그인</div>
+                        <div id = "contentsText" class = "description">
+                            아이디와 비밀번호를 입력하고 로그인하세요.
+                            <form id = "form1" method ="post" action = "/process/login">
+                                <table>
+                                    <tr class = "row">
+                                        <td class = "col1"><label id = "contentsText">아이디</label></td>
+                                            <td class = "col2" colspan="2">
+                                                <div class = "ui input">
+                                                    <input class = "inputbox" type = "text" name = "id">
+                                                </div>
+                                            </td>
+                                        <td></td>
+                                    </tr>
+                                    <tr class = "row">
+                                        <td class = "col1"><label id = "contentsText">비밀번호</label></td>
+                                            <td class = "col2" colspan="2">
+                                                <div class = "ui input">
+                                                    <input class = "inputbox" type = "password" name = "password">
+                                                </div>
+                                            </td>
+                                        <td></td>
+                                    </tr>
+                                    <tr valign = "baseline">
+                                        <td></td>
+                                        <td>
+                                            <div class = "ui toggle checkbox">
+                                                <input type = "checkbox" name = "saveOption">
+                                                <label>아이디 저장</label>
+                                            </div>
+                                        </td>
+                                        <td id = "buttonContainer" align = "right" >
+                                            <input id = "submitButton" class = "ui primary button" type = "submit" value = "로그인" name = "" >
+                                        </td>
+                                    </tr>
+                                </table>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-    </div>
-    <hr style="border:4px solid rgb(40,240,50)" />
-</body>
+    </body>
 </html>
