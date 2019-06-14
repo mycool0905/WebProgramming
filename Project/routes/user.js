@@ -77,14 +77,26 @@ var login = function(req,res){
             if(err) {throw err;}
             
             if(docs){
-                console.dir(docs);
                 var username = docs[0].name;
                 res.writeHead('200',{'Content-Type':'text/html;charset=utf8'});
-                res.write('<h1>로그인 성공</h1>');
-                res.write('<div><p>사용자 아이디 : ' + paramId + '</p></div>');
-                res.write('<div><p>사용자 이름 : ' + username + '</p></div>');
-                res.write('<br><br><a href="../../public/login.html">다시 로그인하기</a>');
-                res.end();
+                
+                // 뷰 템플릿을 사용하여 렌더링한 후 전송
+                var context = {userid:paramId, username:username};
+                req.app.render('login_success', context, function(err,html){
+                    if(err){
+                        console.error("뷰 렌더링 중 오류 발생 : " + err.stack);
+                        
+                        res.writeHead('200', {'Content-Type':'text/html;charset=utf8'});
+                        res.write('<h2>뷰 렌더링 중 오류 발생</h2>');
+                        res.write('<p>' + err.stack + '</p>');
+                        res.end();
+                        
+                        return;
+                    }
+                    console.log('rendered : ' + html);
+                    
+                    res.end(html);
+                })
             } else {
                 res.writeHead('200',{'Content-Type':'text/html;charset=utf8'});
                 res.write('<h1>로그인 실패</h1>');
