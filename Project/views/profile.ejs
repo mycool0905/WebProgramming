@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset = "UTF-8">
+        <meta name = "viewport" content = "width = device-width, height = device-height, initial-scale = 1">
+        
+        <title>홈 화면</title>
+        
+        <link rel = "stylesheet"
+              href = "//netdna.bootstrapcdn.com/bootsrap/3.0.2/css/bootstrap.min.css">
+        <link rel = "stylesheet"
+              href = "//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css">
+        
+        <style>
+            body{padding-top : 80px;}
+            
+            @font-face{
+                font-family : 'Nanum Gothic'; font-style : normal; font-weight : 400;
+                src : url('../public/NanumGothic-Regular.eot');
+                src : local('NanumGothic'),
+                    url('../public/NanumGothic-Regular.eot?#iefix') format('embedded-opentype'),
+                    url('../public/NanumGothic-Regular.woff2') format('woff2'),
+                    url('../public/NanumGothic-Regular.woff') format('woff'),
+                    url('../public/NanumGothic-Regular.ttf') format('truetype');
+            }
+            
+            h1, p, a{font-family : 'Nanum Gothic'}
+        </style>        
+    </head>
+    <body>
+        <div class = "container">
+            <div class = "page-header text-center">
+                <h1><span class = "fa fa-anchor"></span> 사용자 프로필</h1>
+                <a href = "/logout" class = "btn btn-default btn-sm">로그아웃</a>
+            </div>
+            <br>
+            <div class = "row">
+                <div class = "col-sm-6">
+                    <div class = "well">
+                        <h3><span class = "fa fa-user"></span> 로컬 프로필 정보</h3>
+                        <br>
+                        <p>
+                            <strong>이름</strong> : <%= user.name %><br><br>
+                            <strong>아이디</strong> : <%= user.id %>
+                        </p>
+                        <br>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
