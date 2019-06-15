@@ -74,6 +74,14 @@ Schema.createSchema = function(mongoose){
         return name.length;
     }, 'name 칼럼의 값이 없습니다.');
     
+    UserSchema.static('findById', function(id,callback){
+        return this.find({id : id}, callback);
+    });
+        
+    UserSchema.static('findAll', function(callback){
+        return this.find({}, callback);
+    });
+    
     console.log('UserSchema 정의함.');
     
     return UserSchema;

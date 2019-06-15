@@ -15,6 +15,10 @@ var expressErrorHandler = require('express-error-handler');
 /* 세션 미들웨어 불러오기 */
 var expressSession = require('express-session');
 
+/* Passport 사용 */
+var passport = require('passport');
+var flash = require('connect-flash');
+
 /* Express 객체 생성 */
 var app = express();
 var user = require('./routes/user');
@@ -45,6 +49,11 @@ app.use(expressSession({
     saveUninitialized:true
 }));
 
+/* Passport 사용 설정 */
+app.use(passport.initialize());
+app.use(passport.session());
+app.use(flash());
+
 /* 몽고디비 모듈 사용 */
 var mongoose = require('mongoose');
 mongoose.set('useCreateIndex', true);
@@ -72,17 +81,8 @@ function connectDB(){
     database.on('open', function(){
         console.log('데이터베이스에 연결되었습니다. : ' + databaseUrl);
         
-        
         // user 스키마 및 모델 객체 생성
         UserSchema = require('./database/user_schema').createSchema(mongoose);
-        
-        UserSchema.static('findById', function(id,callback){
-            return this.find({id : id}, callback);
-        });
-        
-        UserSchema.static('findAll', function(callback){
-            return this.find({}, callback);
-        });
         
         // UserModel 모델 정의
         UserModel = mongoose.model('users', UserSchema);
