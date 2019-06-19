@@ -20,12 +20,18 @@ var passport = require('passport');
 var flash = require('connect-flash');
 var LocalStrategy = require('passport-local').Strategy;
 
+/* Socket.io 모듈 불러오기 */
+var socketio = require('socket.io');
+
+/* CORS 사용 - 클라이언트에서 ajax로 요청하면 CORS 지원 */
+var cors = require('cors');
+
 /* Express 객체 생성 */
 var app = express();
 var user = require('./routes/user');
 
 /* Express 객체 기본 속성 설정 */
-app.set('port',process.env.PORT || 2402);
+app.set('port',process.env.PORT || 3000);
 
 /* 뷰 엔진 설정 */
 app.set('views', __dirname + '/views');
@@ -54,6 +60,9 @@ app.use(expressSession({
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(flash());
+
+/* cors를 미들웨어로 사용하도록 등록 */
+app.use(cors());
 
 /* 몽고디비 모듈 사용 */
 var mongoose = require('mongoose');
@@ -184,7 +193,7 @@ var router = express.Router();
 /* 홈 페이지 */
 router.route('/').get(function(req, res){
     console.log('/ 패스 요청됨.');
-    res.render('index.ejs');
+    res.render('chat01.ejs');
 });
 
 /* 로그인 폼 링크 */
@@ -239,12 +248,12 @@ app.get('/logout', function(req, res){
 });
 
 /* 로그인 라우팅 함수 - 데이터베이스의 정보와 비교 */
-router.route('/process/login').post(user.login);
+//router.route('/process/login').post(user.login);
 
-router.route('/process/adduser').post(user.adduser);
+//router.route('/process/adduser').post(user.adduser);
 
 /* 사용자 리스트 함수 */
-router.route('/process/listuser').post(user.listuser);
+//router.route('/process/listuser').post(user.listuser);
 
 /* 라우터 객체 등록 */
 app.use('/',router);
@@ -260,9 +269,20 @@ app.use(expressErrorHandler.httpError(404));
 app.use(errorHandler);
 
 /* 서버 시작 */
-http.createServer(app).listen(app.get('port'),function(){
+var server = http.createServer(app).listen(app.get('port'),function(){
     console.log('서버가 시작되었습니다. 포트 : ',app.get('port'));
     
     // 데이터베이스 연결
     connectDB();
+});
+
+/* socket.io 서버를 시작 */
+var io = socketio.listen(server);
+console.log('socket.io 요청을 받아들일 준비가 되었습니다.');
+
+io.on('connection', function(socket){
+    console.log('connection info : ', socket.request.connection._peername);
+    
+    socket.remoteAddress = socket.request.connection._peername.address;
+    socket.remotePort = socket.request.connection._peername.port;
 });
