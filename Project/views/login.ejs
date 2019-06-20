@@ -1,59 +1,124 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <meta charset = "UTF-8">
-        <meta name = "viewport" content = "width = device-width, height = device-height, initial-scale = 1">
-        
-        <title>홈 화면</title>
-        
-        <link rel = "stylesheet"
-              href = "//netdna.bootstrapcdn.com/bootsrap/3.0.2/css/bootstrap.min.css">
-        <link rel = "stylesheet"
-              href = "//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css">
-        
-        <style>
-            body{padding-top : 80px;}
-            
-            @font-face{
-                font-family : 'Nanum Gothic'; font-style : normal; font-weight : 400;
-                src : url('../public/NanumGothic-Regular.eot');
-                src : local('NanumGothic'),
-                    url('../public/NanumGothic-Regular.eot?#iefix') format('embedded-opentype'),
-                    url('../public/NanumGothic-Regular.woff2') format('woff2'),
-                    url('../public/NanumGothic-Regular.woff') format('woff'),
-                    url('../public/NanumGothic-Regular.ttf') format('truetype');
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width = device-width, height = device-height, initial-scale = 1">
+    <title>경매왕</title>
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+    <!------ Include the above in your HEAD tag ---------->
+
+    <style>
+        body {
+            font-family: "Lato", sans-serif;
+        }
+
+        .main-head {
+            height: 150px;
+            background: #FFF;
+
+        }
+
+        .sidenav {
+            height: 100%;
+            background-color: #000;
+            overflow-x: hidden;
+            padding-top: 20px;
+        }
+
+
+        .main {
+            padding: 0px 10px;
+        }
+
+        @media screen and (max-height: 450px) {
+            .sidenav {
+                padding-top: 15px;
             }
-            
-            h1, p, a{font-family : 'Nanum Gothic'}
-        </style>        
-    </head>
-    <body>
-        <div class = "container">
-            <div class = "col-sm-6 col-sm-offset-3">
-                <h1><span class = "fa fa-sign-in"></span> 로그인</h1>
-                
+        }
+
+        @media screen and (max-width: 450px) {
+            .login-form {
+                margin-top: 10%;
+            }
+
+            .register-form {
+                margin-top: 10%;
+            }
+        }
+
+        @media screen and (min-width: 768px) {
+            .main {
+                margin-left: 40%;
+            }
+
+            .sidenav {
+                width: 40%;
+                position: fixed;
+                z-index: 1;
+                top: 0;
+                left: 0;
+            }
+
+            .login-form {
+                margin-top: 80%;
+            }
+
+            .register-form {
+                margin-top: 20%;
+            }
+        }
+
+
+        .login-main-text {
+            margin-top: 20%;
+            padding: 60px;
+            color: #fff;
+        }
+
+        .login-main-text h2 {
+            font-weight: 300;
+        }
+
+        .btn-black {
+            background-color: #000 !important;
+            color: #fff;
+        }
+
+    </style>
+</head>
+
+<body>
+    <div class="sidenav" onclick="location.href='/'">
+        <div class="login-main-text">
+            <h2>경매왕<br><br> 로그인 페이지</h2>
+            <p>로그인이나 회원가입을 해주십시오.</p>
+        </div>
+    </div>
+    <div class="main">
+        <div class="col-md-6 col-sm-12">
+            <div class="login-form">
                 <!-- 인증 처리 후 메시지가 있으면 메시지 표시 -->
                 <% if(message.length > 0){%>
-                    <div class = "alert alert-danger"><%= message %></div>
+                <div class="alert alert-danger"><%= message %></div>
                 <% } %>
-                <form action = "/login" method = "post">
-                    <div class = "form-group">
+                <form action="/login" method="post">
+                    <div class="form-group">
                         <label>아이디</label>
-                        <input type = "text" class = "form-control" name = "id">
+                        <input type="text" name="id" class="form-control" placeholder="아이디">
                     </div>
-                    <div class = "form-group">
+                    <div class="form-group">
                         <label>비밀번호</label>
-                        <input type = "password" class = "form-control" name = "password">
+                        <input type="password" name="password" class="form-control" placeholder="비밀번호">
                     </div>
-                    
-                    <button type = "submit" class = "btn btn-warning btn-lg">로그인</button>
+                    <button type="submit" class="btn btn-black">로그인</button>
+                    <a href="/signup" class="btn btn-secondary">회원가입</a>
                 </form>
-                
-                <hr>
-                
-                <p>계정이 없으세요? <a href = "/signup">회원가입하기</a></p>
-                <p><a href = "/">홈으로</a>.</p>
             </div>
         </div>
-    </body>
+    </div>
+</body>
+
 </html>

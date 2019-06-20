@@ -1,47 +1,116 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <meta charset = "UTF-8">
-        <meta name = "viewport" content = "width = device-width, height = device-height, initial-scale = 1">
-        
-        <title>홈 화면</title>
-        
-        <link rel = "stylesheet"
-              href = "//netdna.bootstrapcdn.com/bootsrap/3.0.2/css/bootstrap.min.css">
-        <link rel = "stylesheet"
-              href = "//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css">
-        
-        <style>
-            body{padding-top : 80px;}
-            
-            @font-face{
-                font-family : 'Nanum Gothic'; font-style : normal; font-weight : 400;
-                src : url('../public/NanumGothic-Regular.eot');
-                src : local('NanumGothic'),
-                    url('../public/NanumGothic-Regular.eot?#iefix') format('embedded-opentype'),
-                    url('../public/NanumGothic-Regular.woff2') format('woff2'),
-                    url('../public/NanumGothic-Regular.woff') format('woff'),
-                    url('../public/NanumGothic-Regular.ttf') format('truetype');
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width = device-width, height = device-height, initial-scale = 1">
+    <title>경매왕</title>
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+    <!------ Include the above in your HEAD tag ---------->
+
+    <style>
+        body {
+            font-family: "Lato", sans-serif;
+        }
+
+        .main-head {
+            height: 150px;
+            background: #FFF;
+
+        }
+
+        .sidenav {
+            height: 100%;
+            background-color: #000;
+            overflow-x: hidden;
+            padding-top: 20px;
+        }
+
+
+        .main {
+            padding: 0px 10px;
+        }
+
+        @media screen and (max-height: 450px) {
+            .sidenav {
+                padding-top: 15px;
             }
-            
-            h1, p, a{font-family : 'Nanum Gothic'}
-        </style>        
-    </head>
-    <body>
-        <div class = "container">
-            <div class = "jumbotron text-center">
-                <h1><span class = "fa fa-shopping-cart"></span> 경매왕</h1>
-                <br>
-                <p>로그인하세요.</p>
-                <p>계정이 없으시면 회원가입하세요.</p>
-                <br>
-                <a href = "/login" class = "btn btn-default">
-                    <span class = "fa fa-user"></span>로그인
-                </a>
-                <a href = "/signup" class = "btn btn-default">
-                    <span class = "fa fa-user"></span>회원가입
-                </a>
+        }
+
+        @media screen and (max-width: 450px) {
+            .login-form {
+                margin-top: 10%;
+            }
+
+            .register-form {
+                margin-top: 10%;
+            }
+        }
+
+        @media screen and (min-width: 768px) {
+            .main {
+                margin-left: 40%;
+            }
+
+            .sidenav {
+                width: 40%;
+                position: fixed;
+                z-index: 1;
+                top: 0;
+                left: 0;
+            }
+
+            .login-form {
+                margin-top: 80%;
+            }
+
+            .register-form {
+                margin-top: 20%;
+            }
+        }
+
+
+        .login-main-text {
+            margin-top: 20%;
+            padding: 60px;
+            color: #fff;
+        }
+
+        .login-main-text h2 {
+            font-weight: 300;
+        }
+
+        .btn-black {
+            background-color: #000 !important;
+            color: #fff;
+        }
+
+    </style>
+</head>
+
+<body>
+    <div class="sidenav" onclick="location.href='/'">
+        <div class="login-main-text">
+            <h2>경매왕<br><br> 홈 페이지</h2>
+            <p>경매왕에 오신것을 환영합니다.</p>
+        </div>
+    </div>
+    <div class="main">
+        <div style="background-color:black; width:100%; height:100px"></div>
+        <div style="display:flex">
+            <div style="flex:1;text-align:center">
+                <a href="/login" style="color:black;">로그인</a>
+            </div>
+            <div style="flex:1;text-align:center">
+                <a href="/profile" style="color:black;">나의 정보</a>
+            </div>
+            <div style="flex:1;text-align:center">
+                <a href="/auction" style="color:black;">경매장 가기</a>
             </div>
         </div>
-    </body>
+    </div>
+</body>
+
 </html>
