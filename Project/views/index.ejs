@@ -8,6 +8,7 @@
     <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
     <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
     <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="https://cdn.socket.io/socket.io-1.7.0.js"></script>
     <!------ Include the above in your HEAD tag ---------->
 
     <style>
@@ -94,21 +95,33 @@
     <div class="sidenav" onclick="location.href='/'">
         <div class="login-main-text">
             <h2>경매왕<br><br> 홈 페이지</h2>
-            <p>경매왕에 오신것을 환영합니다.</p>
+            <p>경매왕에 오신 걸 환영합니다.</p>
         </div>
     </div>
     <div class="main">
         <div style="background-color:black; width:100%; height:100px"></div>
         <div style="display:flex">
-            <div style="flex:1;text-align:center">
+            <div style="flex:1;text-align:center;border:1px solid black">
+                <%if(message == "login"){%>
                 <a href="/login" style="color:black;">로그인</a>
+                <%} else {%>
+                <a href="/logout" style="color:black;">로그아웃</a>
+                <%}%>
             </div>
-            <div style="flex:1;text-align:center">
+            <div style="flex:1;text-align:center;border:1px solid black">
                 <a href="/profile" style="color:black;">나의 정보</a>
             </div>
-            <div style="flex:1;text-align:center">
-                <a href="/auction" style="color:black;">경매장 가기</a>
+            <div style="flex:1;text-align:center;border:1px solid black">
+                <a href="/auction" style="color:black;">경매 게시판</a>
             </div>
+        </div>
+        <div>
+            <%if(message == "login"){%>
+                <img src="../public/images/auction.jpg" style="width:100%; margin-top:5%">
+                <%}else{%>
+                <h3><span class="fa fa-user"></span>실시간 경매장</h3>
+                <textarea id="chatLog" style="width:95%;height:750px;" readonly></textarea>
+                <%}%>
         </div>
     </div>
 </body>

@@ -29,7 +29,7 @@
                 var options = {'forceNew' : true};
                 var url = 'http://' + host + ':' + port;
                 
-                socket = io.connect(url, options);
+                socket = io();
                 
                 socket.on('connect', function(){
                     println('웹 소켓 서버에 연결되었습니다. : ' + url);

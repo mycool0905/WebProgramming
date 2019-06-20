@@ -91,7 +91,7 @@
 </head>
 
 <body>
-    <div class="sidenav">
+    <div class="sidenav" onclick="location.href='/'">
         <div class="login-main-text">
             <h2>경매왕<br> 나의 정보</h2>
             <p></p>
@@ -100,15 +100,27 @@
     <div class="main">
         <div style="background-color:black; width:100%; height:100px"></div>
         <div style="display:flex">
-            <div style="flex:1;text-align:center">
-                <a href="/login" style="color:black;">로그인</a>
+            <div style="flex:1;text-align:center;border:1px solid black">
+                <a href="/logout" style="color:black;">로그아웃</a>
             </div>
-            <div style="flex:1;text-align:center">
+            <div style="flex:1;text-align:center;border:1px solid black">
                 <a href="/profile" style="color:black;">나의 정보</a>
             </div>
-            <div style="flex:1;text-align:center">
-                <a href="/auction" style="color:black;">경매장 가기</a>
+            <div style="flex:1;text-align:center;border:1px solid black">
+                <a href="/auction" style="color:black;">경매 게시판</a>
             </div>
+        </div>
+        <br>
+        <div>
+            <h3><span class = "fa fa-user"></span>나의 정보</h3>
+            <br>
+            <p>
+                <strong>이름</strong> : <%= user.name %><br><br>
+                <strong>아이디</strong> : <%= user.id %><br><br>
+                <strong>나이</strong> : <%= user.age %><br><br>
+                <strong>주소</strong> : <%= user.address %><br><br>
+                <strong>연락처</strong> : <%= user.phone %><br><br>
+            </p>
         </div>
     </div>
 </body>
