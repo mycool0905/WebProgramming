@@ -89,6 +89,81 @@
         }
 
     </style>
+    <script>
+        var socket;
+
+        $(function() {
+
+            $("#inputButton").bind('click', function(e) {
+                messageToServer();
+                clearInputArea();
+            });
+
+            $("#inputMessage").keydown(function(e) {
+                if (e.keyCode == 13) {
+                    messageToServer();
+                    clearInputArea();
+                }
+            });
+
+        });
+
+        // 서버에 연결하는 함수 정의
+        function connectToServer() {
+
+            socket = io();
+
+            socket.on('connect', function() {
+                println('실시간 경매장에 연결되었습니다.');
+
+                socket.on('message', function(message) {
+                    //console.log(JSON.stringify(message));
+
+                    println(message.sender + ':' + message.data);
+                });
+            });
+
+            socket.on('disconnect', function() {
+                println('실시간 경매장이 종료되었습니다.');
+            });
+        }
+
+        function messageToServer() {
+            var sender = document.getElementById('userID').innerHTML;
+            var recepient = "ALL";
+            var data = $('#inputMessage').val();
+
+            //console.log(sender + recepient + data);
+
+            var output = {
+                sender: sender,
+                recepient: recepient,
+                command: 'chat',
+                type: 'text',
+                data: data
+            };
+            //console.log('서버로 보낼 데이터 : ' + JSON.stringify(output));
+
+            if (socket == undefined) {
+                alert('서버에 연결되어 있지 않습니다. 먼저 서버에 연결하세요.');
+                return;
+            }
+
+            socket.emit('message', output);
+        }
+
+        function clearInputArea() {
+            var inputArea = document.getElementById('inputMessage');
+            inputArea.value = "";
+        }
+
+        function println(data) {
+            var chatLog = document.getElementById('chatLog');
+            chatLog.innerHTML += data + "<br>";
+            chatLog.scrollTop = chatLog.scrollHeight;
+        }
+
+    </script>
 </head>
 
 <body>
@@ -120,7 +195,16 @@
                 <img src="../public/images/auction.jpg" style="width:100%; margin-top:5%">
                 <%}else{%>
                 <h3><span class="fa fa-user"></span>실시간 경매장</h3>
-                <textarea id="chatLog" style="width:95%;height:750px;" readonly></textarea>
+                <script>
+                    connectToServer();
+
+                </script>
+                <div id="chatLog" style="width:95%;height:750px;border:1px solid black; overflow:auto;overflow-x:hidden;"></div>
+                <div style="margin-top:5px">
+                    <span id="userID"><%=user.id%></span>
+                    <input id="inputMessage" type="text" style="width:75%">
+                    <input id="inputButton" type="button" class="btn btn-black" value="전송">
+                </div>
                 <%}%>
         </div>
     </div>

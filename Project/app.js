@@ -15,6 +15,10 @@ var expressErrorHandler = require('express-error-handler');
 /* 세션 미들웨어 불러오기 */
 var expressSession = require('express-session');
 
+/* 파일 업로드용 미들웨어 */
+var multer = require('multer');
+var fs = require('fs');
+
 /* Passport 사용 */
 var passport = require('passport');
 var flash = require('connect-flash');
@@ -29,6 +33,7 @@ var cors = require('cors');
 /* Express 객체 생성 */
 var app = express();
 var user = require('./routes/user');
+var post = require('./routes/post');
 
 /* Express 객체 기본 속성 설정 */
 app.set('port', process.env.PORT || 3000);
@@ -74,9 +79,7 @@ var database;
 
 /* 데이터베이스 모델 객체를 위한 변수 선언 */
 var UserModel;
-
-/* crypto 모듈 불러들이기 */
-var crypto = require('crypto');
+var PostModel;
 
 /* 데이터베이스에 연결 */
 function connectDB() {
@@ -96,13 +99,21 @@ function connectDB() {
         console.log('데이터베이스에 연결되었습니다. : ' + databaseUrl);
 
         // user 스키마 및 모델 객체 생성
-        UserSchema = require('./database/user_schema').createSchema(mongoose);
+        UserSchema = require('./model/user_schema').createSchema(mongoose);
 
         // UserModel 모델 정의
         UserModel = mongoose.model('users', UserSchema);
         console.log('UserModel 정의함.');
 
+        // post 스키마 및 모델 객체 생성
+        PostSchema = require('./model/post_schema').createSchema(mongoose);
+
+        // PostModel 모델 정의
+        PostModel = mongoose.model('posts', PostSchema);
+        console.log('PostModel 정의함.');
+
         user.init(database, UserSchema, UserModel);
+        post.init(database, PostSchema, PostModel);
     });
 
     // 연결 끊어졌을 때 5초후 재연결
@@ -111,6 +122,28 @@ function connectDB() {
         setInterval(connectDB, 5000);
     });
 }
+
+/* multer 미들웨어 사용 : 미들웨어 사용 순서 중요하다
+body-parser -> multer -> router
+파일 제한 : 10000개, 100GB */
+var storage = multer.diskStorage({
+    destination: function (req, file, callback) {
+        callback(null, 'uploads');
+    },
+    filename: function (req, file, callback) {
+        var extension = path.extname(file.originalname);
+        var basename = path.basename(file.originalname, extension);
+        callback(null, basename + "-" + Date.now() + extension);
+    }
+});
+
+var upload = multer({
+    storage: storage,
+    limits: {
+        files: 10000,
+        fileSize: 100 * 1024 * 1024 * 1024
+    }
+});
 
 /* 패스포트 로그인 설정 */
 passport.use('local-login', new LocalStrategy({
@@ -218,18 +251,22 @@ router.route('/').get(function (req, res) {
     // 인증이 안 된 경우
     if (!req.user) {
         console.log('사용자 인증이 안 된 상태임.');
-        res.render('index.ejs', {message : 'login'});
+        res.render('index.ejs', {
+            message: 'login'
+        });
         return;
     }
-    
+
     // 인증된 경우
     console.log('사용자 인증된 상태임.');
     if (Array.isArray(req.user)) {
+        sessionMaster = req.user[0]._doc.id;
         res.render('index.ejs', {
             message: 'logout',
             user: req.user[0]._doc
         });
     } else {
+        sessionMaster = req.user.id;
         res.render('index.ejs', {
             message: 'logout',
             user: req.user
@@ -266,6 +303,33 @@ app.post('/signup', passport.authenticate('local-signup', {
     failureFlash: true
 }));
 
+/* 게시글 폼 링크 */
+app.get('/upload', function (req, res) {
+    console.log('/upload 패스 요청됨.');
+    res.render('upload.ejs');
+});
+
+app.post('/upload', upload.single('img'), function (req, res) {
+    console.log('/upload 패스 요청됨.');
+    
+    var newPost = new PostModel({
+        'id' : req.user.id,
+        'title': req.body.title,
+        'content': req.body.content,
+        'photo': req.file.originalname,
+        'price': req.body.price
+    });
+
+    newPost.save(function (err) {
+        if (err) {
+            throw err;
+        }
+        console.log('게시글 추가함.');
+        res.redirect('/auction');
+    });
+});
+
+
 /* 프로필 화면 - 로그인 여부를 확인할 수 있도록 먼저 isLoggedIn 미들웨어 실행 */
 router.route('/profile').get(function (req, res) {
     console.log('/profile 패스 요청됨.');
@@ -301,32 +365,21 @@ router.route('/auction').get(function (req, res) {
         return;
     }
 
-    // 인증된 경우
-    console.log('사용자 인증된 상태임.');
-    if (Array.isArray(req.user)) {
+    PostModel.find({}, function (err, posts) {
+        if (err) throw err;
+
         res.render('auction.ejs', {
-            user: req.user[0]._doc
+            posts: posts
         });
-    } else {
-        res.render('auction.ejs', {
-            user: req.user
-        });
-    }
+    });
 });
+
 /* 로그아웃 */
 app.get('/logout', function (req, res) {
     console.log('/logout 패스 요청됨.');
     req.logout();
     res.redirect('/');
 });
-
-/* 로그인 라우팅 함수 - 데이터베이스의 정보와 비교 */
-//router.route('/process/login').post(user.login);
-
-//router.route('/process/adduser').post(user.adduser);
-
-/* 사용자 리스트 함수 */
-//router.route('/process/listuser').post(user.listuser);
 
 /* 라우터 객체 등록 */
 app.use('/', router);
@@ -353,9 +406,6 @@ var server = http.createServer(app).listen(app.get('port'), function () {
 var io = socketio.listen(server);
 console.log('socket.io 요청을 받아들일 준비가 되었습니다.');
 
-// 로그인 아이디 매핑(로그인 ID -> 소켓 ID)
-var login_ids = {};
-
 io.on('connection', function (socket) {
     console.log('connection info : ', socket.request.connection._peername);
 
@@ -364,121 +414,10 @@ io.on('connection', function (socket) {
 
     // 'message' 이벤트를 받았을 때의 처리
     socket.on('message', function (message) {
-        console.log('message 이벤트를 받았습니다.');
 
         if (message.recepient == 'ALL') {
             // 나를 포함한 모든 클라이언트에게 메시지 전달
             io.sockets.emit('message', message);
-        } else {
-            // 일대일 채팅 대상에게 메시지 전달
-            if (login_ids[message.recepient]) {
-                io.sockets.connected[login_ids[message.recepient]].emit('message', message);
-
-                // 응답 메시지 전송
-                sendResponse(socket, 'message', '200', '메시지를 전송했습니다.');
-            } else {
-                // 응답 메시지 전송
-                sendResponse(socket, 'login', '404', '상대방의 로그인 ID를 찾을 수 없습니다.');
-            }
         }
-    });
-
-    // 'login' 이벤트를 받았을 때의 처리
-    socket.on('login', function (login) {
-        console.log('login 이벤트를 받았습니다.');
-
-        // 기존 클라이언트 ID가 없으면 클라이언트 ID를 맵에 추가
-        console.log('접속한 소켓의 ID : ' + socket.id);
-        login_ids[login.id] = socket.id;
-        socket.login_id = login.id;
-
-        console.log('접속한 클라이언트 ID 개수 : %d', Object.keys(login_ids).length);
-
-        // 응답 메시지 전송
-        sendResponse(socket, 'login', '200', '로그인되었습니다.');
-    });
-
-    // room 이벤트를 받았을 때의 처리
-    socket.on('room', function (room) {
-        console.log('room 이벤트를 받았습니다.');
-
-        if (room.command == 'create') {
-            if (io.sockets.adapter.rooms[room.roomId]) { // 방이 이미 만들어져 있는 경우
-                console.log('방이 이미 만들어져 있습니다.');
-            } else {
-                console.log('방을 새로 만듭니다.');
-
-                socket.join(room.roomId);
-
-                var curRoom = io.sockets.adapter.rooms[room.roomId];
-                curRoom.id = room.roomId;
-                curRoom.name = room.roomName;
-                curRoom.owner = room.roomOwner;
-            }
-        } else if (room.command == 'update') {
-            var curRoom = io.sockets.adapter.rooms[room.roomId];
-            curRoom.id = room.roomId;
-            curRoom.name = room.roomName;
-            curRoom.owner = room.roomOwner;
-        } else if (room.command == 'delete') {
-            socket.leave(room.roomId);
-
-            if (io.sockets.adapter.rooms[room.roomId]) { // 방이 만들어져 있는 경우
-                delete io.sockets.adapter.rooms[room.roomId];
-            } else { // 방이 만들어져 있지 않은 경우
-                console.log('방이 만들어져 있지 않습니다.');
-            }
-        }
-
-        var roomList = getRoomList();
-
-        var output = {
-            command: 'list',
-            rooms: roomList
-        };
-        console.log('클라이언트로 보낼 데이터 : ' + JSON.stringify(output));
-
-        io.sockets.emit('room', output);
     });
 });
-
-function sendResponse(socket, command, code, message) {
-    var statusObj = {
-        command: command,
-        code: code,
-        message: message
-    };
-    socket.emit('response', statusObj);
-}
-
-function getRoomList() {
-    console.dir(io.sockets.adapter.rooms);
-
-    var roomList = [];
-
-    Object.keys(io.sockets.adapter.rooms).forEach(function (roomId) { // 각각의 방에 대해 처리
-        console.log('current room id : ' + roomId);
-        var outRoom = io.sockets.adapter.rooms[roomId];
-
-        // find default room using all attributes
-        var foundDefault = false;
-        var index = 0;
-        Object.keys(outRoom.sockets).forEach(function (key) {
-            console.log('#' + index + ' : ' + key + ', ' + outRoom.sockets[key]);
-
-            if (roomId == key) {
-                foundDefault = true;
-                console.log('this is default room.');
-            }
-            index++;
-        });
-
-        if (!foundDefault) {
-            roomList.push(outRoom);
-        }
-    });
-    console.log('[ROOM LIST]');
-    console.dir(roomList);
-
-    return roomList;
-}

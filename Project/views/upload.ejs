@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width = device-width, height = device-height, initial-scale = 1">
+    <title>경매왕</title>
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+    <!------ Include the above in your HEAD tag ---------->
+
+    <style>
+        body {
+            font-family: "Lato", sans-serif;
+        }
+
+        .main-head {
+            height: 150px;
+            background: #FFF;
+
+        }
+
+        .sidenav {
+            height: 100%;
+            background-color: #000;
+            overflow-x: hidden;
+            padding-top: 20px;
+        }
+
+
+        .main {
+            padding: 0px 10px;
+        }
+
+        @media screen and (max-height: 450px) {
+            .sidenav {
+                padding-top: 15px;
+            }
+        }
+
+        @media screen and (max-width: 450px) {
+            .login-form {
+                margin-top: 10%;
+            }
+
+            .register-form {
+                margin-top: 10%;
+            }
+        }
+
+        @media screen and (min-width: 768px) {
+            .main {
+                margin-left: 40%;
+            }
+
+            .sidenav {
+                width: 40%;
+                position: fixed;
+                z-index: 1;
+                top: 0;
+                left: 0;
+            }
+
+            .login-form {
+                margin-top: 80%;
+            }
+
+            .register-form {
+                margin-top: 20%;
+            }
+        }
+
+
+        .login-main-text {
+            margin-top: 20%;
+            padding: 60px;
+            color: #fff;
+        }
+
+        .login-main-text h2 {
+            font-weight: 300;
+        }
+
+        .btn-black {
+            background-color: #000 !important;
+            color: #fff;
+        }
+
+    </style>
+</head>
+
+<body>
+    <div class="sidenav" onclick="location.href='/'">
+        <div class="login-main-text">
+            <h2>경매왕<br><br> 경매 게시판</h2>
+            <p></p>
+        </div>
+    </div>
+    <div class="main">
+        <div style="background-color:black; width:100%; height:100px"></div>
+        <div style="display:flex">
+            <div style="flex:1;text-align:center;border:1px solid black">
+                <a href="/logout" style="color:black;">로그아웃</a>
+            </div>
+            <div style="flex:1;text-align:center;border:1px solid black">
+                <a href="/profile" style="color:black;">나의 정보</a>
+            </div>
+            <div style="flex:1;text-align:center;border:1px solid black">
+                <a href="/auction" style="color:black;">경매 게시판</a>
+            </div>
+        </div>
+
+        <div>
+            <h3><span class="fa fa-user"></span>경매 올리기</h3>
+            <script>
+                //Enter키 눌렀을 때, 전송되는 것 방지
+                function captureReturnKey(e){
+                    if(e.keyCode==13 && e.srcElement.type != "textarea")
+                        return false;
+                }
+            </script>
+            <form style="border:1px solid black;margin-top:10px" action="/upload" method="post" enctype="multipart/form-data" onkeydown="return captureReturnKey(event)">
+                <div style="margin-top:10px"></div>
+                <div style="display:flex;text-align:center">
+                    <span style="flex:1">제목</span>
+                    <input style="flex:4" class="form-control" type="text" name="title">
+                    <span style="flex:1"></span>
+                </div>
+                <div style="display:flex;text-align:center">
+                    <span style="flex:1">경매가</span>
+                    <input style="flex:4" class="form-control" type="number" name="price">
+                    <span style="flex:1"></span>
+                </div>
+                <br>
+                <div style="display:flex;text-align:center">
+                    <div style="flex:1">내용</div>
+                    <span style="flex:5"></span>
+                </div>
+                <div style="display:flex;">
+                    <span style="flex:1"></span>
+                    <textarea class="form-control" style="flex:4;height:500px" type="text" name="content"></textarea>
+                    <span style="flex:1"></span>
+                </div>
+                <br>
+                <div style="display:flex;text-align:center">
+                    <span style="text-align:center">
+                        <input style="margin-left:20px" type="file" name="img">
+                    </span>
+                    <span style="flex:5"></span>
+                </div>
+                <br>
+                <div style="display:flex;text-align:center">
+                    <span style="flex:5"></span>
+                    <span style="flex:1">
+                        <button class="btn btn-black" type="submit">올리기</button>
+                    </span>
+                </div>
+                <br>
+            </form>
+        </div>
+    </div>
+</body>
+
+</html>
