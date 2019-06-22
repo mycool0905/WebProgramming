@@ -8,6 +8,7 @@
     <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
     <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
     <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="https://cdn.socket.io/socket.io-1.7.0.js"></script>
     <!------ Include the above in your HEAD tag ---------->
 
     <style>
@@ -88,6 +89,77 @@
         }
 
     </style>
+    <script>
+        var socket;
+
+        $(function() {
+
+            $("#inputButton").bind('click', function(e) {
+                messageToServer();
+            });
+
+            $("#inputPrice").keydown(function(e) {
+                if (e.keyCode == 13) {
+                    messageToServer();
+                }
+            });
+
+        });
+
+        // 서버에 연결하는 함수 정의
+        function connectToServer() {
+
+            socket = io();
+
+            socket.on('connect', function() {
+
+                socket.on('price', function(message) {
+                    //console.log(JSON.stringify(message));
+
+                    print(message.data);
+                });
+            });
+
+            socket.on('disconnect', function() {
+                print('경매 종료');
+            });
+        }
+
+        function messageToServer() {
+            var sender = $('#bidder').val();
+            var objId = $('#objId').val();
+            var data = $('#inputPrice').val();
+            var currentPrice = document.getElementById('currentPrice').innerHTML;
+            
+            //console.log(sender + recepient + data);
+
+            var output = {
+                sender: sender,
+                objId: objId,
+                data: data
+            };
+            console.log(output);
+            //console.log('서버로 보낼 데이터 : ' + JSON.stringify(output));
+
+            if (socket == undefined) {
+                alert('서버에 연결되어 있지 않습니다. 먼저 서버에 연결하세요.');
+                return;
+            }
+
+            if (parseInt(data) > parseInt(currentPrice)) {
+                socket.emit('price', output);
+                alert('입찰되었습니다.');
+            } else {
+                alert('현재 입찰가보다 높은 가격을 입력해야 입찰이 됩니다!');
+            }
+        }
+
+        function print(data) {
+            var priceValue = document.getElementById('currentPrice');
+            priceValue.innerHTML = data;
+        }
+
+    </script>
 </head>
 
 <body>
@@ -108,6 +180,31 @@
             </div>
             <div style="flex:1;text-align:center;border:1px solid black">
                 <a href="/auction" style="color:black;">경매 게시판</a>
+            </div>
+        </div>
+        <script>
+            connectToServer();
+        </script>
+        <div>
+            <br>
+            <div>
+                <h3><span class="fa fa-user"></span><%= post.title%></h3>
+                <br>
+                <strong>작성자</strong> : <%= post.id %><br><br>
+                <hr>
+                <strong>사진</strong> : <img src="../uploads/<%= post.photo %>" width="100%"><br><br>
+                <%for(var i=0; i<post.content.split("\r\n").length; i++){%>
+                <p><%= post.content.split("\r\n")[i] %></p>
+                <%}%>
+                <hr>
+                <strong>현재 경매가</strong> : <span id="currentPrice"><%= post.price %></span>원<br><br>
+                <input id="inputPrice" type="number" value="<%=post.price%>">원
+                <input id="inputButton" type="button" class="btn btn-black" value="입찰하기">
+                <input id="bidder" type="hidden" value="<%=bidder.id%>">
+                <input id="objId" type="hidden" value="<%=post._id%>">
+            </div>
+            <div style="text-align:right">
+                <a href="/auction" class="btn btn-black" style="color:white;">게시판으로 돌아가기</a>
             </div>
         </div>
     </div>

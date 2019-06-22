@@ -10,7 +10,8 @@ Schema.createSchema = function(mongoose){
         title: {type: String, index: 'hashed', required: true, 'default': ''},
         content: {type: String},
         photo: {type: String},
-        price: {type: Number}
+        price: {type: Number},
+        bidder: {type: String}
     });
     
     // 스키마 객체의 path() 메소드를 호출한 후 validate() 메소드를 호출하면 유효한 값인지 확인할 수 있다.
@@ -23,14 +24,6 @@ Schema.createSchema = function(mongoose){
     PostSchema.path('title').validate(function(title){
         return title.length;
     }, 'title 칼럼의 값이 없습니다.');
-    
-    PostSchema.static('findById', function(id,callback){
-        return this.find({id : id}, callback);
-    });
-        
-    PostSchema.static('findAll', function(callback){
-        return this.find({}, callback);
-    });
     
     console.log('PostSchema 정의함.');
     

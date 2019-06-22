@@ -120,18 +120,20 @@
                         <th>현재 경매가</th>
                     </tr>
                 </thead>
+                <%if(posts !== null){%>
                 <tbody>
                     <%for(var i=posts.length-1; i>=0;i--){%>
-                    <tr>
-                        <th><%=i+1%></th>
-                        <th><%=posts[i].title%></th>
-                        <th><%=posts[i].id%></th>
-                        <th><%=posts[i].price%></th>
+                    <tr onclick="location.href='/auction/<%=posts[i]._id%>'">
+                            <th><%=i+1%></th>
+                            <th><%=posts[i].title%></th>
+                            <th><%=posts[i].id%></th>
+                            <th><%=posts[i].price%>원</th>
                     </tr>
                     <%}%>
                 </tbody>
+                <%}%>
             </table>
-            <hr/>
+            <hr />
             <a href="/upload" class="btn btn-black" style="color:white;">경매 올리기</a>
         </div>
     </div>

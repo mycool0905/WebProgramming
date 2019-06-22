@@ -50,8 +50,9 @@ app.use(bodyParser.urlencoded({
 /* body-parser를 사용해 application/json 파싱 */
 app.use(bodyParser.json());
 
-/* public 폴더를 static으로 오픈 */
+/* public, uploads 폴더를 static으로 오픈 */
 app.use('/public', static(path.join(__dirname, '/public')));
+app.use('/uploads', static(path.join(__dirname, '/uploads')));
 
 /* cookie-parser 설정 */
 app.use(cookieParser());
@@ -132,8 +133,13 @@ var storage = multer.diskStorage({
     },
     filename: function (req, file, callback) {
         var extension = path.extname(file.originalname);
-        var basename = path.basename(file.originalname, extension);
-        callback(null, basename + "-" + Date.now() + extension);
+        PostModel.find({
+            id: req.user.id
+        }, function (err, docs) {
+            if (err) throw err;
+            var count = docs.length + 1;
+            callback(null, req.user.id + "_" + count + extension);
+        });
     }
 });
 
@@ -230,15 +236,11 @@ passport.use('local-signup', new LocalStrategy({
 
 /* 사용자 인증에 성공했을 때 호출 */
 passport.serializeUser(function (member, done) {
-    console.log('serializeUser() 호출됨.');
-
     done(null, member);
 });
 
 /* 사용자 인증 이후 사용자 요청이 있을 때마다 호출 */
 passport.deserializeUser(function (member, done) {
-    console.log('deserializeUser() 호출됨.');
-
     done(null, member);
 });
 
@@ -311,22 +313,34 @@ app.get('/upload', function (req, res) {
 
 app.post('/upload', upload.single('img'), function (req, res) {
     console.log('/upload 패스 요청됨.');
-    
-    var newPost = new PostModel({
-        'id' : req.user.id,
-        'title': req.body.title,
-        'content': req.body.content,
-        'photo': req.file.originalname,
-        'price': req.body.price
+
+    var extension = path.extname(req.file.originalname);
+    PostModel.find({
+        id: req.user.id
+    }, function (err, docs) {
+        if (err) throw err;
+
+        var count = docs.length + 1;
+        console.log(count);
+
+        var newPost = new PostModel({
+            'id': req.user.id,
+            'title': req.body.title,
+            'content': req.body.content,
+            'photo': req.user.id + "_" + count + extension,
+            'price': req.body.price
+        });
+
+        newPost.save(function (err) {
+            if (err) {
+                throw err;
+            }
+            console.log('게시글 추가함.');
+            res.redirect('/auction');
+        });
+
     });
 
-    newPost.save(function (err) {
-        if (err) {
-            throw err;
-        }
-        console.log('게시글 추가함.');
-        res.redirect('/auction');
-    });
 });
 
 
@@ -370,6 +384,18 @@ router.route('/auction').get(function (req, res) {
 
         res.render('auction.ejs', {
             posts: posts
+        });
+    });
+});
+
+/* 경매 게시글 화면*/
+router.route('/auction/:id').get(function (req, res) {
+    PostModel.findOne({
+        _id: req.params.id
+    }, function (err, post) {
+        res.render('post', {
+            bidder: req.user,
+            post: post
         });
     });
 });
@@ -420,4 +446,18 @@ io.on('connection', function (socket) {
             io.sockets.emit('message', message);
         }
     });
+
+    // 'price' 이벤트를 받았을 때의 처리
+    socket.on('price', function (price) {
+        PostModel.update({
+            _id: price.objId
+        }, {
+            $set: {
+                price: parseInt(price.data),
+                bidder: price.sender
+            }
+        },function(err,docs){
+        });
+        io.sockets.emit('price', price);
+    })
 });
